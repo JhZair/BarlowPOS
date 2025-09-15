@@ -6,8 +6,8 @@ SET time_zone = "-05:00";
 --
 -- Base de datos: `barlowPOS_db`
 --
-CREATE DATABASE IF NOT EXISTS `pdv_restaurante_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `pdv_restaurante_db`;
+CREATE DATABASE IF NOT EXISTS `barlowPOS_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `barlowPOS_db`;
 
 -- --------------------------------------------------------
 
