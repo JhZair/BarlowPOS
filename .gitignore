@@ -1,0 +1,25 @@
+# 1. El entorno virtual (¡MUY IMPORTANTE!)
+# No queremos subir miles de archivos de librerías a GitHub.
+venv/
+env/
+.venv/
+
+# 2. Archivos compilados de Python (basura que se genera al ejecutar)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 3. Variables de entorno y secretos (SEGURIDAD CRÍTICA)
+# Aquí están tus contraseñas de BD. Tu amigo debe crear su propio .env
+.env
+
+# 4. Archivos de configuración de VS Code (Opcional, pero recomendado)
+.vscode/
+
+# 5. Archivos temporales del sistema
+.DS_Store
+
+# 6. Base de datos SQLite (si la usaras, aunque usas MySQL, es bueno tenerlo)
+*.sqlite3
+*.db
