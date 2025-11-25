@@ -1,18 +1,19 @@
+import mysql.connector
 import os
-import oracledb
 from dotenv import load_dotenv
 
-# Cargar variables del archivo .env
 load_dotenv()
 
 def get_db_connection():
     try:
-        connection = oracledb.connect(
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            dsn=os.getenv("DB_DSN")
+        connection = mysql.connector.connect(
+            user=os.getenv('DB_USER'),
+            password=os.getenv('DB_PASSWORD'),
+            host=os.getenv('DB_HOST'),
+            port=os.getenv('DB_PORT'),
+            database=os.getenv('DB_NAME')
         )
         return connection
-    except oracledb.Error as e:
-        print(f"Error conectando a Oracle: {e}")
+    except mysql.connector.Error as err:
+        print(f"Error conectando a MySQL: {err}")
         return None
