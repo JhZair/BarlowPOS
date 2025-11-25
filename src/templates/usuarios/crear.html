@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Nuevo Usuario</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('usuarios.guardar') }}" method="POST">
+                    
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre Completo</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="credenciales" class="form-label">Contraseña / Hash</label>
+                        <input type="password" class="form-control" id="credenciales" name="credenciales" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_rol" class="form-label">Rol</label>
+                        <select class="form-select" id="id_rol" name="id_rol" required>
+                            <option value="">Seleccione un rol...</option>
+                            {% for rol in roles %}
+                            <option value="{{ rol.id_rol }}">{{ rol.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="acceso" class="form-label">Estado de Acceso</label>
+                        <select class="form-select" id="acceso" name="acceso">
+                            <option value="activo">Activo</option>
+                            <option value="inactivo">Inactivo</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">Guardar Usuario</button>
+                        <a href="{{ url_for('usuarios.lista') }}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -6,8 +6,10 @@ def create_app():
 
     # --- REGISTRO DE RUTAS ---
     from .routes import home
+    from .routes import usuarios
+    
     app.register_blueprint(home.bp)
-    # -------------------------
+    app.register_blueprint(usuarios.bp)
 
     @app.route('/prueba-db')
     def prueba_db():

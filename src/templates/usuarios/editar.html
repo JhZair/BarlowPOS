@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Editar Usuario</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('usuarios.actualizar') }}" method="POST">
+                    
+                    <input type="hidden" name="id_usuario" value="{{ usuario.id_usuario }}">
+
+                    <div class="mb-3">
+                        <label class="form-label">Nombre Completo</label>
+                        <input type="text" class="form-control" name="nombre" value="{{ usuario.nombre }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Rol</label>
+                        <select class="form-select" name="id_rol" required>
+                            {% for rol in roles %}
+                            <option value="{{ rol.id_rol }}" 
+                                {% if rol.id_rol == usuario.id_rol %}selected{% endif %}>
+                                {{ rol.nombre }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Estado</label>
+                        <select class="form-select" name="acceso">
+                            <option value="activo" {% if usuario.acceso == 'activo' %}selected{% endif %}>Activo</option>
+                            <option value="inactivo" {% if usuario.acceso == 'inactivo' %}selected{% endif %}>Inactivo</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        <a href="{{ url_for('usuarios.lista') }}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
