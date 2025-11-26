@@ -1,4 +1,8 @@
 from flask import Flask
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 def create_app():
     app = Flask(__name__)
@@ -7,9 +11,13 @@ def create_app():
     # --- REGISTRO DE RUTAS ---
     from .routes import home
     from .routes import usuarios
-    
+    from .routes import productos
+    from .routes import reportes
+    from .routes import productos
+
     app.register_blueprint(home.bp)
     app.register_blueprint(usuarios.bp)
+    app.register_blueprint(productos.bp)
 
     @app.route('/prueba-db')
     def prueba_db():

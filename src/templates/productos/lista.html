@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Inventario de Productos</h2>
+<a href="#">+ Nuevo Producto</a> <hr>
+
+<table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Tipo</th>
+            <th>Clasificación</th> <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for prod in productos %}
+        <tr>
+            <td>{{ prod.id_producto }}</td>
+            <td>{{ prod.nombre }}</td>
+            <td>S/ {{ prod.precio_base }}</td>
+            <td>{{ prod.tipo_producto }}</td>
+            <td><strong>{{ prod.nombre_clasificacion }}</strong></td>
+            <td>
+                <a href="#">Editar</a> | 
+                <a href="#">Borrar</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6">No hay productos registrados.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
