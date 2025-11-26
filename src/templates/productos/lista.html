@@ -2,7 +2,7 @@
 
 {% block content %}
 <h2>Inventario de Productos</h2>
-<a href="#">+ Nuevo Producto</a> <hr>
+<a href="{{ url_for('productos.crear') }}">+ Nuevo Producto</a>
 
 <table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%;">
     <thead>
@@ -22,9 +22,12 @@
             <td>S/ {{ prod.precio_base }}</td>
             <td>{{ prod.tipo_producto }}</td>
             <td><strong>{{ prod.nombre_clasificacion }}</strong></td>
-            <td>
-                <a href="#">Editar</a> | 
-                <a href="#">Borrar</a>
+           <td>
+                <a href="{{ url_for('productos.editar', id=prod.id_producto) }}">Editar</a> | 
+                <a href="{{ url_for('productos.eliminar', id=prod.id_producto) }}" 
+                onclick="return confirm('¿Seguro que deseas eliminar este producto?');">
+                Borrar
+                </a>
             </td>
         </tr>
         {% else %}

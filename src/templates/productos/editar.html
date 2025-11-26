@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Editar Producto</h2>
+
+<form action="{{ url_for('productos.actualizar') }}" method="POST">
+    
+    <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
+
+    <label>Nombre:</label><br>
+    <input type="text" name="nombre" value="{{ producto.nombre }}" required>
+    <br><br>
+
+    <label>Precio Base (S/):</label><br>
+    <input type="number" step="0.01" name="precio" value="{{ producto.precio_base }}" required>
+    <br><br>
+    
+    <label>Tipo:</label><br>
+    <input type="text" name="tipo" value="{{ producto.tipo_producto }}">
+    <br><br>
+
+    <label>Clasificación:</label><br>
+    <select name="categoria" required>
+        {% for cat in categorias %}
+            <option value="{{ cat.id_clasificacion }}" 
+                {% if cat.id_clasificacion == producto.id_clasificaciones %} selected {% endif %}>
+                {{ cat.nombre }}
+            </option>
+        {% endfor %}
+    </select>
+    <br><br>
+
+    <button type="submit">Guardar Cambios</button>
+    <a href="{{ url_for('productos.lista') }}">Cancelar</a>
+</form>
+{% endblock %}
