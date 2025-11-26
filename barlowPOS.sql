@@ -186,6 +186,10 @@ INSERT INTO productos (id_producto, nombre, precio_base, tipo_producto, id_clasi
 
 INSERT INTO pedidos (id_pedido, total, fecha, id_usuario, id_mesa)
 VALUES (1, 40.50, NOW(), 2, 2);
+INSERT INTO pedidos (id_pedido, total, fecha, id_usuario, id_mesa)
+VALUES (2, 10.00, NOW(), 5, 1);
+INSERT INTO pedidos (id_pedido, total, fecha, id_usuario, id_mesa)
+VALUES (3, 210.00, NOW(), 1, 5);
 
 INSERT INTO detalles_de_ventas (id_detalle, id_pedido, id_producto, cantidad, precio_unitario)
 VALUES (1, 1, 1, 1, 12.50);
