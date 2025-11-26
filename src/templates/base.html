@@ -19,7 +19,15 @@
                     <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('usuarios.lista') }}">Usuarios</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Mesas</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Pedidos</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('productos.lista') }}">Productos</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('reportes.ventas') }}">Reportes</a>
+                    </li>
+
+                    <li class="nav-item"><a class="nav-link disabled" href="#">Pedidos (Pronto)</a></li>
                 </ul>
             </div>
         </div>

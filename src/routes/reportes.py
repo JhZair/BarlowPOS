@@ -10,24 +10,27 @@ def ventas():
     conn = get_db_connection()
     resultados = []
     
-    # Filtros de fecha (por defecto vacíos)
+    # Obtenemos las fechas del formulario (si es que enviaron algo)
     fecha_inicio = request.form.get('fecha_inicio')
     fecha_fin = request.form.get('fecha_fin')
     
+    # SQL Base: Total vendido por cada Mesero
     sql = """
         SELECT 
-            u.nombre as mesero,
-            COUNT(p.id_pedido) as cantidad_pedidos,
-            SUM(p.total) as total_vendido
+            u.nombre AS mesero, 
+            COUNT(p.id_pedido) AS cantidad_pedidos, 
+            SUM(p.total) AS total_vendido
         FROM pedidos p
         JOIN usuarios u ON p.id_usuario = u.id_usuario
     """
     
-    # Lógica de filtro (WHERE dinámico)
     params = []
+    
+    # Si hay fechas seleccionadas, agregamos el filtro WHERE
     if fecha_inicio and fecha_fin:
         sql += " WHERE p.fecha BETWEEN %s AND %s "
-        params = [fecha_inicio, fecha_fin]
+        # Agregamos horas para cubrir todo el día final (hasta las 23:59:59)
+        params = [fecha_inicio + ' 00:00:00', fecha_fin + ' 23:59:59']
         
     sql += " GROUP BY u.nombre"
     
@@ -36,20 +39,27 @@ def ventas():
         cursor.execute(sql, params)
         resultados = cursor.fetchall()
         
-        # --- EXPORTACIÓN A EXCEL ---
-        if 'exportar_excel' in request.form:
-            # Convertimos la lista de diccionarios a DataFrame de Pandas
+        # --- LÓGICA DE EXPORTAR A EXCEL ---
+        # Si presionaron el botón "Descargar Excel"
+        if 'btn_exportar' in request.form:
+            # 1. Convertir datos a DataFrame de Pandas
             df = pd.DataFrame(resultados)
+            
             if not df.empty:
+                # 2. Crear archivo Excel en memoria (RAM)
                 output = io.BytesIO()
-                # Escribir el Excel en memoria
                 with pd.ExcelWriter(output, engine='openpyxl') as writer:
                     df.to_excel(writer, index=False, sheet_name='Ventas')
                 output.seek(0)
                 
+                cursor.close()
+                conn.close()
+                
+                # 3. Enviar el archivo al navegador
                 return send_file(output, 
                                  download_name="reporte_ventas.xlsx", 
-                                 as_attachment=True)
+                                 as_attachment=True,
+                                 mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         
         cursor.close()
         conn.close()

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Reporte de Ventas por Mesero</h2>
+<p>Consulta el rendimiento de tu personal y exporta los datos.</p>
+
+<form method="POST" style="background: #f4f4f4; padding: 15px; border-radius: 5px;">
+    <label>Desde:</label>
+    <input type="date" name="fecha_inicio" required>
+    
+    <label>Hasta:</label>
+    <input type="date" name="fecha_fin" required>
+    
+    <button type="submit" name="btn_filtrar">🔍 Filtrar Tabla</button>
+    
+    <button type="submit" name="btn_exportar" style="background-color: green; color: white;">
+        📥 Descargar Excel
+    </button>
+</form>
+
+<hr>
+
+<table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%;">
+    <thead>
+        <tr style="background-color: #333; color: white;">
+            <th>Mesero / Usuario</th>
+            <th>Pedidos Atendidos</th>
+            <th>Total Vendido (S/)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for fila in resultados %}
+        <tr>
+            <td>{{ fila.mesero }}</td>
+            <td style="text-align: center;">{{ fila.cantidad_pedidos }}</td>
+            <td style="text-align: right;">S/ {{ fila.total_vendido }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="3">No hay ventas registradas en este rango de fechas.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -18,6 +18,7 @@ def create_app():
     app.register_blueprint(home.bp)
     app.register_blueprint(usuarios.bp)
     app.register_blueprint(productos.bp)
+    app.register_blueprint(reportes.bp)
 
     @app.route('/prueba-db')
     def prueba_db():
