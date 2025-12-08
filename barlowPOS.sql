@@ -1,3 +1,7 @@
+DROP DATABASE IF EXISTS barlow_db;
+CREATE DATABASE barlow_db;
+USE barlow_db;
+
 CREATE TABLE roles (
     id_rol INT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
@@ -26,8 +30,26 @@ CREATE TABLE mesas (
 
 CREATE TABLE clientes (
     id_cliente INT PRIMARY KEY,
-    dni VARCHAR(20),
-    nombre VARCHAR(100) NOT NULL
+    direccion VARCHAR(150),
+    telefono VARCHAR(20),
+    email VARCHAR(100)
+);
+
+CREATE TABLE personas_naturales (
+    id_cliente INT PRIMARY KEY,
+    dni VARCHAR(8) NOT NULL UNIQUE,
+    nombres VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    CONSTRAINT pn_cliente_fk FOREIGN KEY (id_cliente) 
+        REFERENCES clientes(id_cliente) ON DELETE CASCADE
+);
+
+CREATE TABLE personas_juridicas (
+    id_cliente INT PRIMARY KEY,
+    ruc VARCHAR(11) NOT NULL UNIQUE,
+    razon_social VARCHAR(150) NOT NULL,
+    CONSTRAINT pj_cliente_fk FOREIGN KEY (id_cliente) 
+        REFERENCES clientes(id_cliente) ON DELETE CASCADE
 );
 
 CREATE TABLE usuarios (
@@ -91,7 +113,7 @@ CREATE TABLE pagos (
     num_autorizacion VARCHAR(50),
     plataforma VARCHAR(50),
     id_pedido INT NOT NULL,
-    id_usuario INT NOT NULL,
+    id_usuario INT NOT NULL, -- Quién cobró
     CONSTRAINT check_tipo_pago CHECK (tipo_pago IN ('efectivo', 'tarjeta', 'transferencia', 'qr')),
     CONSTRAINT pagos_pedido_fk FOREIGN KEY (id_pedido)
         REFERENCES pedidos(id_pedido) ON DELETE CASCADE,
@@ -101,21 +123,20 @@ CREATE TABLE pagos (
 
 CREATE TABLE comprobantes (
     id_comprobante INT PRIMARY KEY,
-    tipo_comprobante VARCHAR(10) NOT NULL,
-    fecha DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    id_pedido INT NOT NULL UNIQUE, 
     id_cliente INT NOT NULL,
-    id_pago INT NOT NULL UNIQUE,
-    CONSTRAINT check_tipo_comp CHECK (tipo_comprobante IN ('boleta', 'factura')),
-    CONSTRAINT comp_cliente_fk FOREIGN KEY (id_cliente)
-        REFERENCES clientes(id_cliente),
-    CONSTRAINT comp_pago_fk FOREIGN KEY (id_pago)
-        REFERENCES pagos(id_pago) ON DELETE CASCADE
+    fecha_emision DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    total_gravada DECIMAL(10,2) NOT NULL, -- Base imponible (sin IGV)
+    total_igv DECIMAL(10,2) NOT NULL,     -- El 18%
+    total_importe DECIMAL(10,2) NOT NULL, -- El total final
+    CONSTRAINT comp_pedido_fk FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido),
+    CONSTRAINT comp_cliente_fk FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
 );
 
 CREATE TABLE boletas (
     id_boleta INT PRIMARY KEY,
-    nombre VARCHAR(100),
-    serie_especifica VARCHAR(50) NOT NULL,
+    serie VARCHAR(4) NOT NULL,       
+    correlativo INT NOT NULL,        
     datos_electronicos VARCHAR(4000),
     id_comprobante INT NOT NULL UNIQUE,
     CONSTRAINT boletas_comp_fk FOREIGN KEY (id_comprobante)
@@ -124,8 +145,9 @@ CREATE TABLE boletas (
 
 CREATE TABLE facturas (
     id_factura INT PRIMARY KEY,
-    ruc VARCHAR(20) NOT NULL,
-    razon_social VARCHAR(255) NOT NULL,
+    serie VARCHAR(4) NOT NULL,      
+    correlativo INT NOT NULL,      
+    datos_electronicos VARCHAR(4000),
     id_comprobante INT NOT NULL UNIQUE,
     CONSTRAINT facturas_comp_fk FOREIGN KEY (id_comprobante)
         REFERENCES comprobantes(id_comprobante) ON DELETE CASCADE
@@ -145,6 +167,8 @@ INSERT INTO clasificaciones (id_clasificacion, nombre) VALUES
 (3, 'Guarnición'),
 (4, 'Postre'),
 (5, 'Cóctel');
+INSERT INTO clasificaciones VALUES (6, 'Entrada');
+
 INSERT INTO ambientes (id_ambiente, nombre) VALUES (1, 'Salón principal');
 INSERT INTO ambientes (id_ambiente, nombre) VALUES (2, 'Terraza');
 INSERT INTO ambientes (id_ambiente, nombre) VALUES 
@@ -158,13 +182,22 @@ INSERT INTO mesas (id_mesa, numero, estado, id_ambiente) VALUES
 (3, 11, 'disponible', 1),
 (4, 20, 'reservada', 2),
 (5, 50, 'disponible', 3);
+INSERT INTO mesas VALUES (6, 14, 'disponible', 1)   ;
+INSERT INTO mesas VALUES (7, 12, 'reservada', 1);
+INSERT INTO mesas VALUES (8, 6, 'disponible', 2);
 
-INSERT INTO clientes (id_cliente, dni, nombre) VALUES (1, '71234567', 'María Gómez');
-INSERT INTO clientes (id_cliente, dni, nombre) VALUES (2, '82345678', 'Luis Fernández');
-INSERT INTO clientes (id_cliente, dni, nombre) VALUES 
-(3, '44445555', 'Pedro Castillo'),
-(4, '66667777', 'Keiko Fujimori'),
-(5, '88889999', 'Alan Garcia');
+INSERT INTO clientes (id_cliente, direccion, telefono, email) VALUES 
+(1, 'Av. Siempre Viva 123', '900100200', 'juan@mail.com'),
+(2, 'Calle Los Pinos 456', '900300400', 'ana@mail.com'),
+(3, 'Jr. La Unión 789', '900500600', 'pedro@mail.com');
+
+INSERT INTO personas_naturales (id_cliente, dni, nombres, apellidos) VALUES 
+(1, '09876543', 'Juan', 'Pérez'),
+(2, '11223344', 'Ana', 'Lima'),
+(3, '55667788', 'Pedro', 'Castillo');
+
+INSERT INTO personas_juridicas (id_cliente, ruc, razon_social) VALUES 
+(3, '20100100101', 'Soluciones Tecnológicas SAC');
 
 INSERT INTO usuarios (id_usuario, nombre, credenciales, acceso, id_rol)
 VALUES (1, 'Ana Admin', 'hash123', 'activo', 1);
@@ -183,6 +216,9 @@ INSERT INTO productos (id_producto, nombre, precio_base, tipo_producto, id_clasi
 (3, 'Papas Fritas', 15.00, 'Guarnición', 3),
 (4, 'Torta de Chocolate', 18.00, 'Postre', 4),
 (5, 'Mojito', 25.00, 'Bebida', 5);
+INSERT INTO productos VALUES (6, 'Causa Rellena', 15.00, 'Entrada', 10, 'N', NULL, NULL, 3);
+INSERT INTO productos VALUES (7, 'Pisco Sour', 22.00, 'Bebida', 5, 'Y', 250, 40.0, 5);
+INSERT INTO productos VALUES (8, 'Suspiro a la Limeña', 12.00, 'Postre', NULL, 'Y', NULL, NULL, 4);
 
 INSERT INTO pedidos (id_pedido, total, fecha, id_usuario, id_mesa)
 VALUES (1, 40.50, NOW(), 2, 2);
@@ -193,62 +229,19 @@ VALUES (3, 210.00, NOW(), 1, 5);
 
 INSERT INTO detalles_de_ventas (id_detalle, id_pedido, id_producto, cantidad, precio_unitario)
 VALUES (1, 1, 1, 1, 12.50);
-INSERT INTO detalles_de_ventas (id_detalle, id_pedido, id_producto, cantidad, precio_unitario)
-VALUES (2, 1, 2, 1, 28.00);
+INSERT INTO detalles_de_ventas VALUES (2, 1, 2, 1, 30.00);
 
 INSERT INTO pagos (id_pago, monto_entregado, vuelto, tipo_pago, id_pedido, id_usuario)
-VALUES (1, 50.00, 9.50, 'efectivo', 1, 2);
+VALUES (1, 20.00, 0.00, 'efectivo', 1, 2);
+INSERT INTO pagos VALUES (2, 100.00, 0, 'tarjeta', '1234', 'Visa', '001', 'Niubiz', 2, 2);
 
-INSERT INTO comprobantes (id_comprobante, tipo_comprobante, fecha, id_cliente, id_pago)
-VALUES (1, 'boleta', NOW(), 1, 1);
+INSERT INTO comprobantes (id_comprobante, fecha_emision, total_gravada, total_igv, total_importe, id_cliente, id_pedido)
+VALUES (1, NOW(), 33.90, 6.10, 40.00, 1, 1),
+(2, NOW(), 84.75, 15.25, 100.00, 2, 2);
 
-INSERT INTO boletas (id_boleta, nombre, serie_especifica, datos_electronicos, id_comprobante)
-VALUES (1, 'Boleta de Venta', 'B001-0001', 'QR: ...', 1);
+INSERT INTO boletas (id_boleta, serie, correlativo, datos_electronicos, id_comprobante)
+VALUES (1, 'B001', 12345, 'HASH_QR_DATA', 1);
+
+INSERT INTO facturas VALUES (1, 'F001', 567, 'HASH_QR_DATA', 2);
+
 USE barlow_db;
-
-
-CREATE TABLE proveedores (
-    id_proveedor INT PRIMARY KEY,
-    ruc VARCHAR(20) NOT NULL,
-    nombre VARCHAR(100) NOT NULL,
-    telefono VARCHAR(20),
-    email VARCHAR(100)
-);
-
-CREATE TABLE insumos (
-    id_insumo INT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    unidad_medida VARCHAR(20) NOT NULL, -- ej: kg, litros, unidades
-    stock DECIMAL(10,2) DEFAULT 0,
-    id_proveedor INT NOT NULL,
-    CONSTRAINT insumos_prov_fk FOREIGN KEY (id_proveedor) 
-        REFERENCES proveedores(id_proveedor)
-);
-
-INSERT INTO proveedores VALUES (1, '20100100101', 'Distribuidora Licores SAC', '999888777', 'ventas@licores.com');
-INSERT INTO proveedores VALUES (2, '20200200202', 'Verduras del Campo EIRL', '988777666', 'contacto@campo.com');
-INSERT INTO proveedores VALUES (3, '20300300303', 'Carnes Premium SA', '977666555', 'pedidos@carnes.com');
-INSERT INTO proveedores VALUES (4, '20400400404', 'Suministros de Limpieza', '966555444', 'limpieza@suministros.com');
-INSERT INTO proveedores VALUES (5, '20500500505', 'Bebidas Gaseosas Peru', '955444333', 'ventas@gaseosas.com');
-
-INSERT INTO insumos VALUES (1, 'Cerveza Artesanal Barril', 'Litros', 50.0, 1);
-INSERT INTO insumos VALUES (2, 'Papa Amarilla', 'Kg', 100.0, 2);
-INSERT INTO insumos VALUES (3, 'Lomo Fino', 'Kg', 30.0, 3);
-INSERT INTO insumos VALUES (4, 'Limón', 'Kg', 20.0, 2);
-INSERT INTO insumos VALUES (5, 'Servilletas', 'Paquete', 200.0, 4);
-
-INSERT INTO mesas VALUES (3, 11, 'disponible', 1)   ;
-INSERT INTO mesas VALUES (4, 12, 'reservada', 1);
-INSERT INTO mesas VALUES (5, 6, 'disponible', 2);
-
-INSERT INTO clientes VALUES (3, '09876543', 'Juan Pérez');
-INSERT INTO clientes VALUES (4, '11223344', 'Ana Lima');
-INSERT INTO clientes VALUES (5, '55667788', 'Pedro Castillo');
-
-INSERT INTO clasificaciones VALUES (3, 'Entrada');
-INSERT INTO clasificaciones VALUES (4, 'Postre');
-INSERT INTO clasificaciones VALUES (5, 'Cóctel');
-
-INSERT INTO productos VALUES (3, 'Causa Rellena', 15.00, 'Entrada', 10, 'N', NULL, NULL, 3);
-INSERT INTO productos VALUES (4, 'Pisco Sour', 22.00, 'Bebida', 5, 'Y', 250, 40.0, 5);
-INSERT INTO productos VALUES (5, 'Suspiro a la Limeña', 12.00, 'Postre', NULL, 'Y', NULL, NULL, 4);
