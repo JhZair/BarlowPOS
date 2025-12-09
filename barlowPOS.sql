@@ -144,21 +144,19 @@ CREATE TABLE comprobantes (
 );
 
 CREATE TABLE boletas (
-    id_boleta INT PRIMARY KEY,
-    serie VARCHAR(4) NOT NULL,       
-    correlativo INT NOT NULL,        
-    datos_electronicos VARCHAR(4000),
-    id_comprobante INT NOT NULL UNIQUE,
+    id_comprobante INT PRIMARY KEY,
+    serie VARCHAR(4) NOT NULL,
+    correlativo INT NOT NULL,
+    datos_electronicos VARCHAR(4000),  
     CONSTRAINT boletas_comp_fk FOREIGN KEY (id_comprobante)
         REFERENCES comprobantes(id_comprobante) ON DELETE CASCADE
 );
 
 CREATE TABLE facturas (
-    id_factura INT PRIMARY KEY,
-    serie VARCHAR(4) NOT NULL,      
-    correlativo INT NOT NULL,      
+    id_comprobante INT PRIMARY KEY,
+    serie VARCHAR(4) NOT NULL,
+    correlativo INT NOT NULL,
     datos_electronicos VARCHAR(4000),
-    id_comprobante INT NOT NULL UNIQUE,
     CONSTRAINT facturas_comp_fk FOREIGN KEY (id_comprobante)
         REFERENCES comprobantes(id_comprobante) ON DELETE CASCADE
 );
@@ -250,9 +248,9 @@ VALUES (1, NOW(), 33.90, 6.10, 40.00, 1, 1),
 (2, NOW(), 84.75, 15.25, 100.00, 2, 2);
 
 INSERT INTO boletas (id_boleta, serie, correlativo, datos_electronicos, id_comprobante)
-VALUES (1, 'B001', 12345, 'HASH_QR_DATA', 1);
+VALUES (1, 'B001', 12345, 'HASH_QR_DATA');
 
-INSERT INTO facturas VALUES (1, 'F001', 567, 'HASH_QR_DATA', 2);
+INSERT INTO facturas VALUES (1, 'F001', 567, 'HASH_QR_DATA');
 
 ALTER TABLE detalles_de_ventas MODIFY id_detalle INT AUTO_INCREMENT;
 

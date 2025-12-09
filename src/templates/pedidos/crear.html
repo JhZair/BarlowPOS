@@ -2,74 +2,102 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Nuevo Pedido</h2>
-    <form action="{{ url_for('pedidos.nuevo_pedido') }}" method="POST">
-        
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Mesa (Disponible)</label>
-                <select name="id_mesa" class="form-select" required>
-                    <option value="" selected disabled>Seleccione una mesa...</option>
-                    {% for mesa in mesas %}
-                    <option value="{{ mesa.id_mesa }}">Mesa {{ mesa.numero }} - {{ mesa.estado }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Nuevo Pedido</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('pedidos.nuevo_pedido') }}" method="POST">
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Seleccionar Mesa (Disponible)</label>
+                                <select name="id_mesa" class="form-select" required>
+                                    <option value="" disabled selected>-- Elige una mesa --</option>
+                                    {% for m in mesas %}
+                                        <option value="{{ m.id_mesa }}">Mesa {{ m.numero }} ({{ m.estado }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Mesero Encargado</label>
+                                <select name="id_usuario" class="form-select" required>
+                                    {% for u in usuarios %}
+                                        <option value="{{ u.id_usuario }}">{{ u.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
 
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Mesero / Usuario</label>
-                <select name="id_usuario" class="form-select" required>
-                    {% for usuario in usuarios %}
-                    <option value="{{ usuario.id_usuario }}">{{ usuario.nombre }} ({{ usuario.id_rol }})</option>
-                    {% endfor %}
-                </select>
+                        <hr>
+
+                        <h5 class="mb-3">Productos a Consumir</h5>
+                        <div id="productos-container">
+                            <div class="row mb-2 producto-row align-items-end">
+                                <div class="col-md-7">
+                                    <label class="small text-muted">Producto</label>
+                                    <select name="productos[]" class="form-select" required>
+                                        <option value="" disabled selected>Buscar producto...</option>
+                                        {% for p in productos %}
+                                            <option value="{{ p.id_producto }}">
+                                                {{ p.nombre }} - S/ {{ p.precio_base }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small text-muted">Cantidad</label>
+                                    <input type="number" name="cantidades[]" class="form-control" value="1" min="1" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-danger w-100 btn-remove" disabled onclick="eliminarFila(this)">X</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-outline-primary" onclick="agregarProducto()">
+                                + Agregar otro plato/bebida
+                            </button>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">Generar Pedido</button>
+                            <a href="{{ url_for('pedidos.index') }}" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-
-        <hr>
-        <h4>Productos (Detalles)</h4>
-        
-        <div id="productos-container">
-            <div class="row mb-2 producto-row">
-                <div class="col-md-6">
-                    <select name="productos[]" class="form-select" required>
-                        <option value="" disabled selected>Seleccione producto...</option>
-                        {% for prod in productos %}
-                        <option value="{{ prod.id_producto }}">{{ prod.nombre }} - S/ {{ prod.precio_base }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <input type="number" name="cantidades[]" class="form-control" placeholder="Cantidad" min="1" value="1" required>
-                </div>
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-danger btn-remove" disabled>X</button>
-                </div>
-            </div>
-        </div>
-
-        <button type="button" class="btn btn-secondary mb-3" onclick="agregarProducto()">+ Agregar otro producto</button>
-        <br>
-        <button type="submit" class="btn btn-success btn-lg">Generar Pedido</button>
-    </form>
+    </div>
 </div>
 
 <script>
     function agregarProducto() {
+        // Clonar la primera fila
         const container = document.getElementById('productos-container');
-        const original = container.querySelector('.producto-row');
+        const rows = container.getElementsByClassName('producto-row');
+        const original = rows[0];
         const clone = original.cloneNode(true);
         
-        // Limpiar valores
-        clone.querySelector('input').value = 1;
+        // Limpiar los valores del clon
         clone.querySelector('select').value = "";
+        clone.querySelector('input').value = 1;
         
-        // Activar botón de eliminar
+        // Habilitar el botón de eliminar en el clon
         const btnRemove = clone.querySelector('.btn-remove');
         btnRemove.disabled = false;
-        btnRemove.onclick = function() { clone.remove(); };
 
         container.appendChild(clone);
+    }
+
+    function eliminarFila(btn) {
+        // Eliminar la fila padre del botón
+        btn.closest('.producto-row').remove();
     }
 </script>
 {% endblock %}

@@ -2,47 +2,51 @@
 
 {% block content %}
 <div class="container mt-4">
-    <div class="card">
-        <div class="card-header bg-dark text-white d-flex justify-content-between">
-            <h4 class="mb-0">Pedido #{{ pedido.id_pedido }}</h4>
-            <span>{{ pedido.fecha }}</span>
-        </div>
-        <div class="card-body">
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <h5>Información</h5>
-                    <p><strong>Mesero:</strong> {{ pedido.mesero }}</p>
-                    <p><strong>Mesa:</strong> {{ pedido.mesa }}</p>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Pedido #{{ pedido.id_pedido }}</h4>
+                    <span class="badge bg-light text-dark">{{ pedido.fecha }}</span>
                 </div>
-                <div class="col-md-6 text-end">
-                    <h3 class="text-primary">Total: S/ {{ pedido.total }}</h3>
+                <div class="card-body">
+                    
+                    <div class="row mb-4 bg-light p-3 rounded mx-1">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Mesero:</strong> {{ pedido.mesero }}</p>
+                            <p class="mb-0"><strong>Mesa:</strong> #{{ pedido.mesa }}</p>
+                        </div>
+                        <div class="col-md-6 text-end align-self-center">
+                            <h2 class="text-success mb-0">Total: S/ {{ pedido.total }}</h2>
+                        </div>
+                    </div>
+
+                    <h5 class="mb-3">Detalle de Consumo</h5>
+                    <table class="table table-bordered">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>Producto</th>
+                                <th class="text-center">Precio Unit.</th>
+                                <th class="text-center">Cant.</th>
+                                <th class="text-end">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in detalles %}
+                            <tr>
+                                <td>{{ d.nombre }}</td>
+                                <td class="text-center">{{ d.precio_unitario }}</td>
+                                <td class="text-center">{{ d.cantidad }}</td>
+                                <td class="text-end fw-bold">{{ "%.2f"|format(d.precio_unitario * d.cantidad) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer text-end">
+                    <a href="{{ url_for('pedidos.index') }}" class="btn btn-secondary">Volver al listado</a>
                 </div>
             </div>
-
-            <h5>Productos Consumidos</h5>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Precio Unit.</th>
-                        <th>Cant.</th>
-                        <th>Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for d in detalles %}
-                    <tr>
-                        <td>{{ d.nombre }}</td>
-                        <td>{{ d.precio_unitario }}</td>
-                        <td>{{ d.cantidad }}</td>
-                        <td>{{ d.precio_unitario * d.cantidad }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="card-footer">
-            <a href="{{ url_for('pedidos.index') }}" class="btn btn-secondary">Volver al listado</a>
         </div>
     </div>
 </div>
