@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between mb-3">
+        <h2>Directorio de Clientes</h2>
+        <a href="{{ url_for('clientes.crear') }}" class="btn btn-primary">+ Nuevo Cliente</a>
+    </div>
+
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>DNI</th> <th>Nombres y Apellidos</th> <th>Teléfono</th> <th>Email</th> <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in clientes %}
+            <tr>
+                <td>{{ c.id_cliente }}</td>
+                <td>{{ c.dni }}</td>
+                <td>{{ c.nombres }} {{ c.apellidos }}</td>
+                <td>{{ c.telefono }}</td>
+                <td>{{ c.email }}</td>
+                <td>
+                    <a href="{{ url_for('clientes.editar', id=c.id_cliente) }}" class="btn btn-sm btn-warning">Editar</a>
+                    <form action="{{ url_for('clientes.eliminar', id=c.id_cliente) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Eliminar cliente?');">
+                        <button class="btn btn-sm btn-danger">X</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

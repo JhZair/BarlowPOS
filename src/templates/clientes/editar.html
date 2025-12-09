@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4 col-md-8">
+    <div class="card">
+        <div class="card-header bg-warning">Editar Cliente #{{ cliente.id_cliente }}</div>
+        <div class="card-body">
+            <form method="POST">
+                
+                <h5 class="text-primary">Datos Personales</h5>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label>DNI</label>
+                        <input type="text" name="dni" class="form-control" value="{{ cliente.dni }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Nombres</label>
+                        <input type="text" name="nombres" class="form-control" value="{{ cliente.nombres }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Apellidos</label>
+                        <input type="text" name="apellidos" class="form-control" value="{{ cliente.apellidos }}" required>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h5 class="text-primary">Datos de Contacto</h5>
+                <div class="mb-3">
+                    <label>Dirección</label>
+                    <input type="text" name="direccion" class="form-control" value="{{ cliente.direccion }}" required>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label>Teléfono</label>
+                        <input type="text" name="telefono" class="form-control" value="{{ cliente.telefono }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label>Email</label>
+                        <input type="email" name="email" class="form-control" value="{{ cliente.email }}">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Actualizar Datos</button>
+                <a href="{{ url_for('clientes.index') }}" class="btn btn-secondary w-100 mt-2">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

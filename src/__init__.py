@@ -16,6 +16,7 @@ def create_app():
     from .routes import productos
     from .routes import pedidos
     from .routes import ambientes
+    from .routes import clientes
 
     app.register_blueprint(home.bp)
     app.register_blueprint(usuarios.bp)
@@ -23,6 +24,7 @@ def create_app():
     app.register_blueprint(reportes.bp)
     app.register_blueprint(pedidos.bp)
     app.register_blueprint(ambientes.bp)
+    app.register_blueprint(clientes.bp)
 
     @app.route('/prueba-db')
     def prueba_db():
