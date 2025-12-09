@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4 col-md-6">
+    <div class="card">
+        <div class="card-header bg-primary text-white">Nuevo Ambiente</div>
+        <div class="card-body">
+            <form action="{{ url_for('ambientes.crear') }}" method="POST">
+                <div class="mb-3">
+                    <label>ID Numérico (Único)</label>
+                    <input type="number" name="id_ambiente" class="form-control" required placeholder="Ej: 6">
+                </div>
+                <div class="mb-3">
+                    <label>Nombre</label>
+                    <input type="text" name="nombre" class="form-control" required placeholder="Ej: Jardín Trasero">
+                </div>
+                <button type="submit" class="btn btn-success">Guardar</button>
+                <a href="{{ url_for('ambientes.index') }}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

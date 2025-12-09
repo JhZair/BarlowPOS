@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4 col-md-6">
+    <div class="card">
+        <div class="card-header bg-warning">Editar Ambiente</div>
+        <div class="card-body">
+            <form method="POST">
+                <div class="mb-3">
+                    <label>ID (No editable)</label>
+                    <input type="text" class="form-control" value="{{ ambiente.id_ambiente }}" disabled>
+                </div>
+                <div class="mb-3">
+                    <label>Nombre</label>
+                    <input type="text" name="nombre" class="form-control" value="{{ ambiente.nombre }}" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Actualizar</button>
+                <a href="{{ url_for('ambientes.index') }}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

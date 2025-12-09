@@ -15,12 +15,14 @@ def create_app():
     from .routes import reportes
     from .routes import productos
     from .routes import pedidos
+    from .routes import ambientes
 
     app.register_blueprint(home.bp)
     app.register_blueprint(usuarios.bp)
     app.register_blueprint(productos.bp)
     app.register_blueprint(reportes.bp)
     app.register_blueprint(pedidos.bp)
+    app.register_blueprint(ambientes.bp)
 
     @app.route('/prueba-db')
     def prueba_db():
