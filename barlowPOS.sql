@@ -79,7 +79,7 @@ CREATE TABLE productos (
 );
 
 CREATE TABLE pedidos (
-    id_pedido INT PRIMARY KEY,
+    id_pedido INT AUTO_INCREMENT PRIMARY KEY,
     total DECIMAL(10,2) NOT NULL,
     fecha DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     id_usuario INT NOT NULL,
@@ -129,7 +129,7 @@ CREATE TABLE comprobantes (
     total_gravada DECIMAL(10,2) NOT NULL, -- Base imponible (sin IGV)
     total_igv DECIMAL(10,2) NOT NULL,     -- El 18%
     total_importe DECIMAL(10,2) NOT NULL, -- El total final
-    CONSTRAINT comp_pedido_fk FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido),
+    CONSTRAINT comp_pedido_fk FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido) ON DELETE CASCADE,
     CONSTRAINT comp_cliente_fk FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
 );
 
