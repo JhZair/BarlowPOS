@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Nuevo Pedido</h2>
+    <form action="{{ url_for('pedidos.nuevo_pedido') }}" method="POST">
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Mesa (Disponible)</label>
+                <select name="id_mesa" class="form-select" required>
+                    <option value="" selected disabled>Seleccione una mesa...</option>
+                    {% for mesa in mesas %}
+                    <option value="{{ mesa.id_mesa }}">Mesa {{ mesa.numero }} - {{ mesa.estado }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Mesero / Usuario</label>
+                <select name="id_usuario" class="form-select" required>
+                    {% for usuario in usuarios %}
+                    <option value="{{ usuario.id_usuario }}">{{ usuario.nombre }} ({{ usuario.id_rol }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <hr>
+        <h4>Productos (Detalles)</h4>
+        
+        <div id="productos-container">
+            <div class="row mb-2 producto-row">
+                <div class="col-md-6">
+                    <select name="productos[]" class="form-select" required>
+                        <option value="" disabled selected>Seleccione producto...</option>
+                        {% for prod in productos %}
+                        <option value="{{ prod.id_producto }}">{{ prod.nombre }} - S/ {{ prod.precio_base }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <input type="number" name="cantidades[]" class="form-control" placeholder="Cantidad" min="1" value="1" required>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-remove" disabled>X</button>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-secondary mb-3" onclick="agregarProducto()">+ Agregar otro producto</button>
+        <br>
+        <button type="submit" class="btn btn-success btn-lg">Generar Pedido</button>
+    </form>
+</div>
+
+<script>
+    function agregarProducto() {
+        const container = document.getElementById('productos-container');
+        const original = container.querySelector('.producto-row');
+        const clone = original.cloneNode(true);
+        
+        // Limpiar valores
+        clone.querySelector('input').value = 1;
+        clone.querySelector('select').value = "";
+        
+        // Activar botón de eliminar
+        const btnRemove = clone.querySelector('.btn-remove');
+        btnRemove.disabled = false;
+        btnRemove.onclick = function() { clone.remove(); };
+
+        container.appendChild(clone);
+    }
+</script>
+{% endblock %}

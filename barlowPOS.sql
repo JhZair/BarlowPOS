@@ -90,8 +90,18 @@ CREATE TABLE pedidos (
         REFERENCES mesas(id_mesa)
 );
 
+CREATE TABLE pedidos (
+    id_pedido INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    id_mesa INT NOT NULL,
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+    total DECIMAL(10, 2) DEFAULT 0,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
+    FOREIGN KEY (id_mesa) REFERENCES mesas(id_mesa)
+);
+
 CREATE TABLE detalles_de_ventas (
-    id_detalle INT PRIMARY KEY,
+    id_detalle INT AUTO_INCREMENT PRIMARY KEY,
     id_pedido INT NOT NULL,
     id_producto INT NOT NULL,
     cantidad INT NOT NULL,
@@ -245,3 +255,29 @@ VALUES (1, 'B001', 12345, 'HASH_QR_DATA', 1);
 INSERT INTO facturas VALUES (1, 'F001', 567, 'HASH_QR_DATA', 2);
 
 USE barlow_db;
+
+-- Para poder modificar sin que mysql evite el cambio
+SET FOREIGN_KEY_CHECKS = 0;
+
+ALTER TABLE pedidos MODIFY id_pedido INT AUTO_INCREMENT;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- ALTER TABLE detalles_de_ventas MODIFY id_detalle INT AUTO_INCREMENT;
+
+/*
+-- 1. Crear la cabecera del pedido (Tabla PEDIDOS)
+INSERT INTO pedidos (total, id_usuario, id_mesa) 
+VALUES (0, 3, 5); -- Mozo ID 3, Mesa ID 5
+SET @id_nuevo_pedido = LAST_INSERT_ID();
+
+-- 2. Insertar los platos (Tabla DETALLES_DE_VENTAS)
+-- Digamos que pidieron 2 'Lomo Saltado' (id 2)
+INSERT INTO detalles_de_ventas (id_detalle, id_pedido, id_producto, cantidad, precio_unitario) 
+VALUES (101, @id_nuevo_pedido, 2, 2, 28.00); 
+
+-- 3. Bloquear la mesa (Tabla MESAS)
+UPDATE mesas 
+SET estado = 'ocupada' 
+WHERE id_mesa = 5;
+*/
