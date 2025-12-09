@@ -118,35 +118,64 @@ def nuevo_pedido():
     return render_template('pedidos/crear.html', mesas=mesas, usuarios=usuarios, productos=productos)
 
 
-# --- 3. EDITAR (Afecta: Pedidos, Mesa Vieja, Mesa Nueva) ---
 @bp.route('/editar/<int:id>', methods=['GET', 'POST'])
 def editar_pedido(id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
     if request.method == 'POST':
+        # 1. Datos del formulario
         nueva_mesa_id = request.form['id_mesa']
+        
+        # Listas de platos nuevos (o editados)
+        productos_ids = request.form.getlist('productos[]')
+        cantidades = request.form.getlist('cantidades[]')
+
         try:
             conn.start_transaction()
-            
-            # Obtener mesa actual
+
+            # --- PARTE A: CAMBIO DE MESA (Lógica anterior) ---
             cursor.execute("SELECT id_mesa FROM pedidos WHERE id_pedido = %s", (id,))
-            row = cursor.fetchone()
-            vieja_mesa_id = row['id_mesa']
+            pedido_actual = cursor.fetchone()
+            vieja_mesa_id = pedido_actual['id_mesa']
 
             if str(vieja_mesa_id) != str(nueva_mesa_id):
-                # A. Actualizar Pedido
                 cursor.execute("UPDATE pedidos SET id_mesa = %s WHERE id_pedido = %s", (nueva_mesa_id, id))
-                # B. Liberar mesa vieja
                 cursor.execute("UPDATE mesas SET estado = 'disponible' WHERE id_mesa = %s", (vieja_mesa_id,))
-                # C. Ocupar mesa nueva
                 cursor.execute("UPDATE mesas SET estado = 'ocupada' WHERE id_mesa = %s", (nueva_mesa_id,))
-                
-                conn.commit()
-                flash('Mesa del pedido actualizada.', 'success')
-            else:
-                flash('No hubo cambios de mesa.', 'info')
 
+            # --- PARTE B: EDITAR PLATOS (Estrategia Borrón y Cuenta Nueva) ---
+            
+            # 1. Borramos TODOS los platos anteriores de este pedido
+            cursor.execute("DELETE FROM detalles_de_ventas WHERE id_pedido = %s", (id,))
+
+            # 2. Insertamos los nuevos platos y recalculamos total
+            total_acumulado = 0
+            
+            for i in range(len(productos_ids)):
+                pid = productos_ids[i]
+                cant = int(cantidades[i])
+                
+                if cant > 0:
+                    # Obtenemos precio actual
+                    cursor.execute("SELECT precio_base FROM productos WHERE id_producto = %s", (pid,))
+                    prod = cursor.fetchone()
+                    precio = prod['precio_base']
+                    
+                    subtotal = precio * cant
+                    total_acumulado += subtotal
+
+                    # Insertamos de nuevo
+                    cursor.execute("""
+                        INSERT INTO detalles_de_ventas (id_pedido, id_producto, cantidad, precio_unitario)
+                        VALUES (%s, %s, %s, %s)
+                    """, (id, pid, cant, precio))
+
+            # 3. Actualizamos el Total en la cabecera
+            cursor.execute("UPDATE pedidos SET total = %s WHERE id_pedido = %s", (total_acumulado, id))
+
+            conn.commit()
+            flash('Pedido modificado correctamente (Mesa y Platos).', 'success')
             return redirect(url_for('pedidos.index'))
 
         except Exception as e:
@@ -156,16 +185,40 @@ def editar_pedido(id):
             cursor.close()
             conn.close()
 
-    # GET
-    cursor.execute("SELECT * FROM pedidos JOIN usuarios u ON pedidos.id_usuario = u.id_usuario WHERE id_pedido = %s", (id,))
-    pedido = cursor.fetchone()
+    # --- GET: CARGAR DATOS PARA EL FORMULARIO ---
     
-    # Traemos mesas disponibles + la actual
+    # 1. Cabecera
+    cursor.execute("""
+        SELECT p.*, u.nombre as nombre_mesero 
+        FROM pedidos p 
+        JOIN usuarios u ON p.id_usuario = u.id_usuario 
+        WHERE id_pedido = %s
+    """, (id,))
+    pedido = cursor.fetchone()
+
+    # 2. Mesas (Para el select)
     cursor.execute("SELECT * FROM mesas WHERE estado = 'disponible' OR id_mesa = %s", (pedido['id_mesa'],))
     mesas = cursor.fetchall()
-    conn.close()
 
-    return render_template('pedidos/editar.html', pedido=pedido, mesas=mesas)
+    # 3. Productos (Para el select de agregar más)
+    cursor.execute("SELECT * FROM productos")
+    todos_productos = cursor.fetchall()
+
+    # 4. Detalles ACTUALES (Para llenar las filas existentes)
+    cursor.execute("""
+        SELECT d.*, p.nombre, p.precio_base 
+        FROM detalles_de_ventas d
+        JOIN productos p ON d.id_producto = p.id_producto
+        WHERE id_pedido = %s
+    """, (id,))
+    detalles_actuales = cursor.fetchall()
+    
+    conn.close()
+    return render_template('pedidos/editar.html', 
+                           pedido=pedido, 
+                           mesas=mesas, 
+                           productos=todos_productos, 
+                           detalles=detalles_actuales)
 
 
 # --- 4. BORRAR (Afecta: Pedidos, Detalles(Cascade), Mesas) ---
