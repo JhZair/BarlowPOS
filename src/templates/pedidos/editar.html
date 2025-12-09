@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">Editar Pedido #{{ pedido.id_pedido }}</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('pedidos.editar_pedido', id=pedido.id_pedido) }}" method="POST">
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Mesero encargado</label>
+                            <input type="text" class="form-control" value="{{ pedido.nombre_mesero }}" disabled>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Total actual</label>
+                            <input type="text" class="form-control" value="S/ {{ pedido.total }}" disabled>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="id_mesa" class="form-label fw-bold">Cambiar Mesa:</label>
+                            <select name="id_mesa" class="form-select" required>
+                                {% for mesa in mesas %}
+                                    <option value="{{ mesa.id_mesa }}" 
+                                        {% if mesa.id_mesa == pedido.id_mesa %} selected {% endif %}>
+                                        Mesa {{ mesa.numero }} ({{ mesa.estado }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">
+                                Al cambiar la mesa, la anterior quedará libre y la nueva pasará a ocupada.
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            <a href="{{ url_for('pedidos.index') }}" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

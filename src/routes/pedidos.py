@@ -188,3 +188,74 @@ def eliminar_pedido(id):
         conn.close()
 
     return redirect(url_for('pedidos.index'))
+
+
+@bp.route('/editar/<int:id>', methods=['GET', 'POST'])
+def editar_pedido(id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if request.method == 'POST':
+        nueva_mesa_id = request.form['id_mesa']
+        
+        try:
+            conn.start_transaction()
+
+            # 1. Obtener la mesa actual que tiene el pedido antes de cambiarla
+            cursor.execute("SELECT id_mesa FROM pedidos WHERE id_pedido = %s", (id,))
+            pedido_actual = cursor.fetchone()
+            
+            if not pedido_actual:
+                raise Exception("El pedido no existe")
+
+            vieja_mesa_id = pedido_actual['id_mesa']
+
+            # Solo hacemos cambios si seleccionaron una mesa diferente
+            if str(vieja_mesa_id) != str(nueva_mesa_id):
+                # A. Actualizar la cabecera del PEDIDO
+                cursor.execute("UPDATE pedidos SET id_mesa = %s WHERE id_pedido = %s", (nueva_mesa_id, id))
+
+                # B. Liberar la mesa VIEJA
+                cursor.execute("UPDATE mesas SET estado = 'disponible' WHERE id_mesa = %s", (vieja_mesa_id,))
+
+                # C. Ocupar la mesa NUEVA
+                cursor.execute("UPDATE mesas SET estado = 'ocupada' WHERE id_mesa = %s", (nueva_mesa_id,))
+
+                conn.commit()
+                flash('Mesa actualizada correctamente.', 'success')
+            else:
+                flash('No se realizaron cambios (misma mesa seleccionada).', 'info')
+
+            return redirect(url_for('pedidos.index'))
+
+        except Exception as e:
+            conn.rollback()
+            flash(f'Error al editar el pedido: {e}', 'danger')
+        finally:
+            cursor.close()
+            conn.close()
+
+    # --- GET: Mostrar formulario ---
+    
+    # Buscamos el pedido para saber qué mesa tiene actualmente
+    cursor.execute("""
+        SELECT p.*, u.nombre as nombre_mesero 
+        FROM pedidos p 
+        JOIN usuarios u ON p.id_usuario = u.id_usuario 
+        WHERE id_pedido = %s
+    """, (id,))
+    pedido = cursor.fetchone()
+
+    if not pedido:
+        flash('Pedido no encontrado', 'danger')
+        return redirect(url_for('pedidos.index'))
+
+    # Buscamos mesas disponibles + la mesa actual (para que aparezca seleccionada en la lista)
+    cursor.execute("""
+        SELECT * FROM mesas 
+        WHERE estado = 'disponible' OR id_mesa = %s
+    """, (pedido['id_mesa'],))
+    mesas = cursor.fetchall()
+    
+    conn.close()
+    return render_template('pedidos/editar.html', pedido=pedido, mesas=mesas)

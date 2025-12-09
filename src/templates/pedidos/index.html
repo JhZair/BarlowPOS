@@ -34,14 +34,16 @@
                 <td>{{ p.nombre_mesero }}</td>
                 <td class="fw-bold">{{ p.total }}</td>
                 <td>
-                <a href="{{ url_for('pedidos.ver_detalle', id=p.id_pedido) }}" class="btn btn-sm btn-info text-white">
-                    Ver
-                </a>
+                    <a href="{{ url_for('pedidos.ver_detalle', id=p.id_pedido) }}" class="btn btn-sm btn-info text-white">
+                        Ver
+                    </a>
 
-                    <form action="{{ url_for('pedidos.eliminar_pedido', id=p.id_pedido) }}" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro de eliminar este pedido? Se liberará la mesa.');">
-                        <button type="submit" class="btn btn-sm btn-danger">
-                            Eliminar
-                        </button>
+                    <a href="{{ url_for('pedidos.editar_pedido', id=p.id_pedido) }}" class="btn btn-sm btn-warning">
+                        Mesa
+                    </a>
+
+                    <form action="{{ url_for('pedidos.eliminar_pedido', id=p.id_pedido) }}" method="POST" style="display:inline;" onsubmit="return confirm('¿Eliminar?');">
+                        <button type="submit" class="btn btn-sm btn-danger">X</button>
                     </form>
                 </td>
             </tr>
