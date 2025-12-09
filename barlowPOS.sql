@@ -254,7 +254,7 @@ VALUES (1, 'B001', 12345, 'HASH_QR_DATA', 1);
 
 INSERT INTO facturas VALUES (1, 'F001', 567, 'HASH_QR_DATA', 2);
 
-USE barlow_db;
+ALTER TABLE detalles_de_ventas MODIFY id_detalle INT AUTO_INCREMENT;
 
 -- Para poder modificar sin que mysql evite el cambio
 SET FOREIGN_KEY_CHECKS = 0;
@@ -263,7 +263,8 @@ ALTER TABLE pedidos MODIFY id_pedido INT AUTO_INCREMENT;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
--- ALTER TABLE detalles_de_ventas MODIFY id_detalle INT AUTO_INCREMENT;
+USE barlow_db;
+
 
 /*
 -- 1. Crear la cabecera del pedido (Tabla PEDIDOS)
