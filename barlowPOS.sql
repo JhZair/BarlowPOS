@@ -90,16 +90,6 @@ CREATE TABLE pedidos (
         REFERENCES mesas(id_mesa)
 );
 
-CREATE TABLE pedidos (
-    id_pedido INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    id_mesa INT NOT NULL,
-    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
-    total DECIMAL(10, 2) DEFAULT 0,
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
-    FOREIGN KEY (id_mesa) REFERENCES mesas(id_mesa)
-);
-
 CREATE TABLE detalles_de_ventas (
     id_detalle INT AUTO_INCREMENT PRIMARY KEY,
     id_pedido INT NOT NULL,
