@@ -1,49 +1,102 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4 col-md-8">
-    <div class="card">
-        <div class="card-header bg-primary text-white">Nuevo Cliente (Persona Natural)</div>
-        <div class="card-body">
-            <form action="{{ url_for('clientes.crear') }}" method="POST">
-                
-                <h5 class="text-primary">Datos Personales (Tabla: Personas Naturales)</h5>
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label>DNI</label>
-                        <input type="text" name="dni" class="form-control" maxlength="8" required>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Registrar Cliente</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('clientes.crear') }}" method="POST">
+                    
+                    <div class="mb-4 text-center">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="tipo_cliente" id="tipoNat" value="natural" checked onclick="toggleForm('natural')">
+                            <label class="form-check-label fw-bold" for="tipoNat">Persona Natural</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="tipo_cliente" id="tipoJur" value="juridica" onclick="toggleForm('juridica')">
+                            <label class="form-check-label fw-bold" for="tipoJur">Persona Jurídica (Empresa)</label>
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <label>Nombres</label>
-                        <input type="text" name="nombres" class="form-control" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label>Apellidos</label>
-                        <input type="text" name="apellidos" class="form-control" required>
-                    </div>
-                </div>
+                    <hr>
 
-                <hr>
-
-                <h5 class="text-primary">Datos de Contacto (Tabla: Clientes)</h5>
-                <div class="mb-3">
-                    <label>Dirección</label>
-                    <input type="text" name="direccion" class="form-control" required>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label>Teléfono</label>
-                        <input type="text" name="telefono" class="form-control">
+                    <div id="form-natural">
+                        <h5 class="text-info">Datos Personales</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label>DNI</label>
+                                <input type="text" name="dni" class="form-control" maxlength="8">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label>Nombres</label>
+                                <input type="text" name="nombres" class="form-control">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label>Apellidos</label>
+                                <input type="text" name="apellidos" class="form-control">
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label>Email</label>
-                        <input type="email" name="email" class="form-control">
-                    </div>
-                </div>
 
-                <button type="submit" class="btn btn-success w-100">Registrar Cliente Completo</button>
-            </form>
+                    <div id="form-juridica" style="display:none;">
+                        <h5 class="text-warning">Datos Empresariales</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label>RUC</label>
+                                <input type="text" name="ruc" class="form-control" maxlength="11">
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <label>Razón Social</label>
+                                <input type="text" name="razon_social" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="text-secondary mt-3">Contacto</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Teléfono</label>
+                            <input type="text" name="telefono" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Email</label>
+                            <input type="email" name="email" class="form-control">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label>Dirección</label>
+                            <input type="text" name="direccion" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('clientes.index') }}" class="btn btn-secondary me-2">Cancelar</a>
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    function toggleForm(tipo) {
+        if (tipo === 'natural') {
+            document.getElementById('form-natural').style.display = 'block';
+            document.getElementById('form-juridica').style.display = 'none';
+            // Requeridos
+            document.getElementsByName('dni')[0].required = true;
+            document.getElementsByName('ruc')[0].required = false;
+        } else {
+            document.getElementById('form-natural').style.display = 'none';
+            document.getElementById('form-juridica').style.display = 'block';
+            // Requeridos
+            document.getElementsByName('dni')[0].required = false;
+            document.getElementsByName('ruc')[0].required = true;
+        }
+    }
+    // Ejecutar al inicio por si acaso
+    toggleForm('natural');
+</script>
 {% endblock %}

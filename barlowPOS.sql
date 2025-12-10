@@ -177,25 +177,40 @@ INSERT INTO ambientes (id_ambiente, nombre) VALUES
 INSERT INTO mesas (id_mesa, numero, estado, id_ambiente) VALUES (1, 10, 'disponible', 1);
 INSERT INTO mesas (id_mesa, numero, estado, id_ambiente) VALUES (2, 5, 'ocupada', 2);
 INSERT INTO mesas (id_mesa, numero, estado, id_ambiente) VALUES 
-(3, 11, 'disponible', 1),
-(4, 20, 'reservada', 2),
-(5, 50, 'disponible', 3);
-INSERT INTO mesas VALUES (6, 14, 'disponible', 1)   ;
-INSERT INTO mesas VALUES (7, 12, 'reservada', 1);
-INSERT INTO mesas VALUES (8, 6, 'disponible', 2);
+(3, 1, 'ocupada', 1),
+(4, 4, 'ocupada', 4),
+(5, 8, 'disponible', 4),
+(6, 3, 'reservada', 5),
+(7, 6, 'disponible', 3);
+INSERT INTO mesas VALUES (8, 11, 'disponible', 1)   ;
+INSERT INTO mesas VALUES (9, 12, 'reservada', 2);
+INSERT INTO mesas VALUES (10, 7, 'ocupada', 3);
 
 INSERT INTO clientes (id_cliente, direccion, telefono, email) VALUES 
 (1, 'Av. Siempre Viva 123', '900100200', 'juan@mail.com'),
 (2, 'Calle Los Pinos 456', '900300400', 'ana@mail.com'),
-(3, 'Jr. La Unión 789', '900500600', 'pedro@mail.com');
+(3, 'Jr. La Unión 789', '900500600', 'soluciones@mail.com'),
+(4, 'Calle Las Begonias 101', '987654321', 'sofia@mail.com'),
+(5, 'Av. Arequipa 2020', '998877665', 'miguel@mail.com'),
+(6, 'Jr. Cusco 444', '912345678', 'lucia@mail.com'),
+(7, 'Urb. Los Álamos Mz F', '923456789', 'roberto@mail.com'),
+(8, 'Av. Javier Prado Este 505', '01-200300', 'contacto@alicorp.com.pe'),
+(9, 'Calle Chinchón 890', '01-400500', 'compras@bbva.com'),
+(10, 'Parque Industrial A-5', '054-202020', 'logistica@gloria.com.pe');
 
 INSERT INTO personas_naturales (id_cliente, dni, nombres, apellidos) VALUES 
 (1, '09876543', 'Juan', 'Pérez'),
 (2, '11223344', 'Ana', 'Lima'),
-(3, '55667788', 'Pedro', 'Castillo');
+(4, '68424040', 'Sofia', 'Mulanovich'),
+(5, '52503050', 'Miguel', 'Grau'),
+(6, '61616060', 'Lucia', 'De la Cruz'),
+(7, '78705670', 'Roberto', 'Gómez Bolaños');
 
 INSERT INTO personas_juridicas (id_cliente, ruc, razon_social) VALUES 
-(3, '20100100101', 'Soluciones Tecnológicas SAC');
+(3, '20100100101', 'Soluciones Tecnológicas SAC'),
+(8, '23200s55237', 'Alicorp S.A.A.'),
+(9, '21670130104', 'BBVA Continental'),
+(10, '20112190797', 'Leche Gloria S.A.');
 
 INSERT INTO usuarios (id_usuario, nombre, credenciales, acceso, id_rol)
 VALUES (1, 'Ana Admin', 'hash123', 'activo', 1);
@@ -204,7 +219,12 @@ VALUES (2, 'Carlos Cajero', 'hash456', 'activo', 2);
 INSERT INTO usuarios (id_usuario, nombre, credenciales, acceso, id_rol) VALUES 
 (3, 'Marcos Mozo', 'hash789', 'activo', 3),
 (4, 'Chefcito Ratatouille', 'hash321', 'activo', 4),
-(5, 'Alma Cenero', 'hash654', 'inactivo', 5);
+(5, 'Alma Cenero', 'hash654', 'inactivo', 5),
+(6, 'Julia JefaSala', 'hash999', 'activo', 3),
+(7, 'Pepe Seguridad', 'hash888', 'activo', 5),
+(8, 'Gordo Ramsay', 'hash777', 'activo', 4), 
+(9, 'Maria Limpieza', 'hash666', 'inactivo', 5),
+(10, 'Soporte IT', 'hash000', 'activo', 1);
 
 INSERT INTO productos (id_producto, nombre, precio_base, tipo_producto, tiempo_preparacion, es_vegetariano, volumen_ml, contenido_alcohol, id_clasificaciones)
 VALUES (1, 'Cerveza IPA', 12.50, 'Bebida', NULL, 'N', 500, 5.5, 1);
@@ -217,6 +237,20 @@ INSERT INTO productos (id_producto, nombre, precio_base, tipo_producto, id_clasi
 INSERT INTO productos VALUES (6, 'Causa Rellena', 15.00, 'Entrada', 10, 'N', NULL, NULL, 3);
 INSERT INTO productos VALUES (7, 'Pisco Sour', 22.00, 'Bebida', 5, 'Y', 250, 40.0, 5);
 INSERT INTO productos VALUES (8, 'Suspiro a la Limeña', 12.00, 'Postre', NULL, 'Y', NULL, NULL, 4);
+INSERT INTO productos (id_producto, nombre, precio_base, tipo_producto, tiempo_preparacion, es_vegetariano, volumen_ml, contenido_alcohol, id_clasificaciones) VALUES 
+(9, 'Inca Kola 500ml', 5.00, 'Bebida', NULL, 'Y', 500, 0.0, 1),
+(10, 'Chicha Morada Jarra', 15.00, 'Bebida', NULL, 'Y', 1000, 0.0, 1),
+(11, 'Limonada Frozen', 12.00, 'Bebida', 5, 'Y', 350, 0.0, 1),
+(12, 'Ají de Gallina', 24.00, 'Plato', 20, 'N', NULL, NULL, 2),
+(13, 'Ceviche Clásico', 32.00, 'Plato', 15, 'N', NULL, NULL, 2),
+(14, 'Tallarines Verdes con Bistec', 26.00, 'Plato', 25, 'N', NULL, NULL, 2),
+(15, 'Risotto de Quinua', 22.00, 'Plato', 25, 'Y', NULL, NULL, 2),
+(16, 'Tequeños de Queso (6 und)', 18.00, 'Entrada', 12, 'Y', NULL, NULL, 3),
+(17, 'Anticuchos de Corazón', 20.00, 'Entrada', 15, 'N', NULL, NULL, 3),
+(18, 'Arroz con Leche', 10.00, 'Postre', NULL, 'Y', NULL, NULL, 4),
+(19, 'Crema Volteada', 12.00, 'Postre', NULL, 'Y', NULL, NULL, 4),
+(20, 'Chilcano de Pisco', 20.00, 'Bebida', 5, 'Y', 250, 35.0, 5),
+(21, 'Vino Tinto Malbec (Copa)', 18.00, 'Bebida', NULL, 'Y', 150, 13.5, 1);
 
 INSERT INTO pedidos (id_pedido, total, fecha, id_usuario, id_mesa)
 VALUES (1, 40.50, NOW(), 2, 2);
@@ -224,23 +258,74 @@ INSERT INTO pedidos (id_pedido, total, fecha, id_usuario, id_mesa)
 VALUES (2, 10.00, NOW(), 5, 1);
 INSERT INTO pedidos (id_pedido, total, fecha, id_usuario, id_mesa)
 VALUES (3, 210.00, NOW(), 1, 5);
+INSERT INTO pedidos (id_pedido, total, fecha, id_usuario, id_mesa)
+VALUES (4, 350.00, NOW() - INTERVAL 1 DAY, 3, 5);
+INSERT INTO pedidos (id_pedido, total, fecha, id_usuario, id_mesa)
+VALUES (5, 24.00, NOW() - INTERVAL 4 HOUR, 6, 3);
+INSERT INTO pedidos (id_pedido, total, fecha, id_usuario, id_mesa)
+VALUES (6, 85.00, NOW() - INTERVAL 2 HOUR, 2, 5);
+INSERT INTO pedidos (id_pedido, total, fecha, id_usuario, id_mesa)
+VALUES (7, 34.00, NOW() - INTERVAL 3 DAY, 3, 2);
+INSERT INTO pedidos (id_pedido, total, fecha, id_usuario, id_mesa)
+VALUES (8, 120.00, NOW() - INTERVAL 7 DAY, 6, 4);
 
 INSERT INTO detalles_de_ventas (id_detalle, id_pedido, id_producto, cantidad, precio_unitario)
 VALUES (1, 1, 1, 1, 12.50);
 INSERT INTO detalles_de_ventas VALUES (2, 1, 2, 1, 30.00);
+INSERT INTO detalles_de_ventas (id_detalle, id_pedido, id_producto, cantidad, precio_unitario) VALUES 
+(3, 4, 13, 4, 32.00), 
+(4, 4, 21, 1, 18.00), 
+(5, 4, 2, 5, 28.00),
+(6, 4, 9, 4, 5.00);
+INSERT INTO detalles_de_ventas (id_detalle, id_pedido, id_producto, cantidad, precio_unitario) VALUES 
+(7, 5, 12, 1, 24.00); 
+INSERT INTO detalles_de_ventas (id_detalle, id_pedido, id_producto, cantidad, precio_unitario) VALUES 
+(8, 6, 20, 3, 20.00), 
+(9, 6, 16, 1, 18.00), 
+(10, 6, 1, 1, 7.00);  
+INSERT INTO detalles_de_ventas (id_detalle, id_pedido, id_producto, cantidad, precio_unitario) VALUES 
+(11, 7, 4, 1, 18.00),  
+(12, 7, 19, 1, 12.00), 
+(13, 7, 9, 1, 4.00);   
+INSERT INTO detalles_de_ventas (id_detalle, id_pedido, id_producto, cantidad, precio_unitario) VALUES 
+(14, 8, 14, 2, 26.00),
+(15, 8, 13, 1, 32.00),
+(16, 8, 10, 2, 18.00);
 
 INSERT INTO pagos (id_pago, monto_entregado, vuelto, tipo_pago, id_pedido, id_usuario)
 VALUES (1, 20.00, 0.00, 'efectivo', 1, 2);
 INSERT INTO pagos VALUES (2, 100.00, 0, 'tarjeta', '1234', 'Visa', '001', 'Niubiz', 2, 2);
+INSERT INTO pagos (id_pago, monto_entregado, vuelto, tipo_pago, ultimos_4_digitos, plataforma, id_pedido, id_usuario)
+VALUES (3, 350.00, 0.00, 'tarjeta', '9090', 'Visa', 4, 2);
+INSERT INTO pagos (id_pago, monto_entregado, vuelto, tipo_pago, id_pedido, id_usuario)
+VALUES (4, 24.00, 0.00, 'efectivo', 5, 2);
+INSERT INTO pagos (id_pago, monto_entregado, vuelto, tipo_pago, num_autorizacion, plataforma, id_pedido, id_usuario)
+VALUES (5, 85.00, 0.00, 'qr', 'YAPE-12399', 'Yape', 6, 2);
+INSERT INTO pagos (id_pago, monto_entregado, vuelto, tipo_pago, id_pedido, id_usuario)
+VALUES (6, 50.00, 16.00, 'efectivo', 7, 2);
+INSERT INTO pagos (id_pago, monto_entregado, vuelto, tipo_pago, num_autorizacion, plataforma, id_pedido, id_usuario)
+VALUES (7, 120.00, 0.00, 'transferencia', 'OP-998877', 'BCP', 8, 2);
 
 INSERT INTO comprobantes (id_comprobante, fecha_emision, total_gravada, total_igv, total_importe, id_cliente, id_pedido)
 VALUES (1, NOW(), 33.90, 6.10, 40.00, 1, 1),
 (2, NOW(), 84.75, 15.25, 100.00, 2, 2);
+INSERT INTO comprobantes (id_comprobante, fecha_emision, total_gravada, total_igv, total_importe, id_cliente, id_pedido) VALUES 
+(3, NOW() - INTERVAL 1 DAY, 296.61, 53.39, 350.00, 8, 4),
+(4, NOW() - INTERVAL 4 HOUR, 20.34, 3.66, 24.00, 4, 5),
+(5, NOW() - INTERVAL 2 HOUR, 72.03, 12.97, 85.00, 1, 6),
+(6, NOW() - INTERVAL 3 DAY, 28.81, 5.19, 34.00, 7, 7),
+(7, NOW() - INTERVAL 7 DAY, 101.69, 18.31, 120.00, 9, 8);
 
-INSERT INTO boletas (id_boleta, serie, correlativo, datos_electronicos, id_comprobante)
-VALUES (1, 'B001', 12345, 'HASH_QR_DATA');
+INSERT INTO boletas (id_comprobante, serie, correlativo, datos_electronicos) VALUES 
+(1, 'B001', 12345, 'HASH_QR_DATA_1'),
+(2, 'B001', 12346, 'HASH_QR_DATA_2'),
+(4, 'B001', 12347, 'HASH_QR_DATA_4'),
+(5, 'B001', 12348, 'HASH_QR_DATA_5'),
+(6, 'B001', 12349, 'HASH_QR_DATA_6');
 
-INSERT INTO facturas VALUES (1, 'F001', 567, 'HASH_QR_DATA');
+INSERT INTO facturas (id_comprobante, serie, correlativo, datos_electronicos) VALUES 
+(3, 'F001', 567, 'HASH_DATA_3_CORP'),
+(7, 'F001', 568, 'HASH_DATA_7_CORP');
 
 ALTER TABLE detalles_de_ventas MODIFY id_detalle INT AUTO_INCREMENT;
 

@@ -1,49 +1,67 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4 col-md-8">
-    <div class="card">
-        <div class="card-header bg-warning">Editar Cliente #{{ cliente.id_cliente }}</div>
-        <div class="card-body">
-            <form method="POST">
-                
-                <h5 class="text-primary">Datos Personales</h5>
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label>DNI</label>
-                        <input type="text" name="dni" class="form-control" value="{{ cliente.dni }}" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label>Nombres</label>
-                        <input type="text" name="nombres" class="form-control" value="{{ cliente.nombres }}" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label>Apellidos</label>
-                        <input type="text" name="apellidos" class="form-control" value="{{ cliente.apellidos }}" required>
-                    </div>
-                </div>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Editar Cliente #{{ cliente.id_cliente }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    
+                    {% if cliente.tipo == 'natural' %}
+                        <div class="alert alert-info">Editando Persona Natural</div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label>DNI</label>
+                                <input type="text" name="dni" class="form-control" value="{{ cliente.dni }}" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label>Nombres</label>
+                                <input type="text" name="nombres" class="form-control" value="{{ cliente.nombres }}" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label>Apellidos</label>
+                                <input type="text" name="apellidos" class="form-control" value="{{ cliente.apellidos }}" required>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">Editando Persona Jurídica</div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label>RUC</label>
+                                <input type="text" name="ruc" class="form-control" value="{{ cliente.ruc }}" required>
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <label>Razón Social</label>
+                                <input type="text" name="razon_social" class="form-control" value="{{ cliente.razon_social }}" required>
+                            </div>
+                        </div>
+                    {% endif %}
 
-                <hr>
-
-                <h5 class="text-primary">Datos de Contacto</h5>
-                <div class="mb-3">
-                    <label>Dirección</label>
-                    <input type="text" name="direccion" class="form-control" value="{{ cliente.direccion }}" required>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label>Teléfono</label>
-                        <input type="text" name="telefono" class="form-control" value="{{ cliente.telefono }}">
+                    <h5 class="text-secondary mt-3">Contacto</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Teléfono</label>
+                            <input type="text" name="telefono" class="form-control" value="{{ cliente.telefono }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Email</label>
+                            <input type="email" name="email" class="form-control" value="{{ cliente.email }}">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label>Dirección</label>
+                            <input type="text" name="direccion" class="form-control" value="{{ cliente.direccion }}">
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label>Email</label>
-                        <input type="email" name="email" class="form-control" value="{{ cliente.email }}">
-                    </div>
-                </div>
 
-                <button type="submit" class="btn btn-primary w-100">Actualizar Datos</button>
-                <a href="{{ url_for('clientes.index') }}" class="btn btn-secondary w-100 mt-2">Cancelar</a>
-            </form>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('clientes.index') }}" class="btn btn-secondary me-2">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>

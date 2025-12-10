@@ -1,40 +1,50 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Inventario de Productos</h2>
-<a href="{{ url_for('productos.crear') }}">+ Nuevo Producto</a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Inventario de Productos</h2>
+    <a href="{{ url_for('productos.crear') }}" class="btn btn-success">+ Nuevo Producto</a>
+</div>
 
-<table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%;">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Producto</th>
-            <th>Precio</th>
-            <th>Tipo</th>
-            <th>Clasificación</th> <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for prod in productos %}
-        <tr>
-            <td>{{ prod.id_producto }}</td>
-            <td>{{ prod.nombre }}</td>
-            <td>S/ {{ prod.precio_base }}</td>
-            <td>{{ prod.tipo_producto }}</td>
-            <td><strong>{{ prod.nombre_clasificacion }}</strong></td>
-           <td>
-                <a href="{{ url_for('productos.editar', id=prod.id_producto) }}">Editar</a> | 
-                <a href="{{ url_for('productos.eliminar', id=prod.id_producto) }}" 
-                onclick="return confirm('¿Seguro que deseas eliminar este producto?');">
-                Borrar
-                </a>
-            </td>
-        </tr>
-        {% else %}
-        <tr>
-            <td colspan="6">No hay productos registrados.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="card shadow">
+    <div class="card-body">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Tipo</th>
+                    <th>Clasificación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prod in productos %}
+                <tr>
+                    <td>{{ prod.id_producto }}</td>
+                    <td class="fw-bold">{{ prod.nombre }}</td>
+                    <td class="text-success">S/ {{ "%.2f"|format(prod.precio_base) }}</td>
+                    <td>{{ prod.tipo_producto }}</td>
+                    <td>
+                        <span class="badge bg-secondary">{{ prod.nombre_clasificacion }}</span>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('productos.editar', id=prod.id_producto) }}" class="btn btn-sm btn-primary">Editar</a>
+                        <a href="{{ url_for('productos.eliminar', id=prod.id_producto) }}" 
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('¿Seguro que deseas eliminar este producto?');">
+                           Eliminar
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center">No hay productos registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

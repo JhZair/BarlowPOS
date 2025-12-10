@@ -1,45 +1,143 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Reporte de Ventas por Mesero</h2>
-<p>Consulta el rendimiento de tu personal y exporta los datos.</p>
+<div class="container-fluid">
+    <h2 class="mb-4">Dashboard de Ventas</h2>
 
-<form method="POST" style="background: #f4f4f4; padding: 15px; border-radius: 5px;">
-    <label>Desde:</label>
-    <input type="date" name="fecha_inicio" required>
-    
-    <label>Hasta:</label>
-    <input type="date" name="fecha_fin" required>
-    
-    <button type="submit" name="btn_filtrar">🔍 Filtrar Tabla</button>
-    
-    <button type="submit" name="btn_exportar" style="background-color: green; color: white;">
-        📥 Descargar Excel
-    </button>
-</form>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body bg-light">
+            <form method="POST" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Fecha Inicio</label>
+                    <input type="date" name="fecha_inicio" class="form-control" value="{{ f_inicio }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Fecha Fin</label>
+                    <input type="date" name="fecha_fin" class="form-control" value="{{ f_fin }}">
+                </div>
+                <div class="col-md-6">
+                    <button type="submit" class="btn btn-primary me-2">🔍 Filtrar</button>
+                    <button type="submit" name="btn_exportar" value="1" class="btn btn-success">
+                        📥 Descargar Excel Completo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-<hr>
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3 shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Venta Total</h5>
+                    <p class="card-text display-6 fw-bold">S/ {{ "%.2f"|format(kpis.venta_total) }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3 shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Pedidos Totales</h5>
+                    <p class="card-text display-6 fw-bold">{{ kpis.total_pedidos }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-dark bg-warning mb-3 shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Ticket Promedio</h5>
+                    <p class="card-text display-6 fw-bold">S/ {{ "%.2f"|format(kpis.ticket_promedio) }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%;">
-    <thead>
-        <tr style="background-color: #333; color: white;">
-            <th>Mesero / Usuario</th>
-            <th>Pedidos Atendidos</th>
-            <th>Total Vendido (S/)</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for fila in resultados %}
-        <tr>
-            <td>{{ fila.mesero }}</td>
-            <td style="text-align: center;">{{ fila.cantidad_pedidos }}</td>
-            <td style="text-align: right;">S/ {{ fila.total_vendido }}</td>
-        </tr>
-        {% else %}
-        <tr>
-            <td colspan="3">No hay ventas registradas en este rango de fechas.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <ul class="nav nav-tabs" id="reporteTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-productos">Top Productos</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-mozos">Rendimiento Mozos</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-pagos">Métodos de Pago</button>
+        </li>
+    </ul>
+
+    <div class="tab-content border border-top-0 p-4 bg-white shadow-sm" id="myTabContent">
+        
+        <div class="tab-pane fade show active" id="tab-productos">
+            <h5 class="mb-3">Los 10 Productos Más Vendidos</h5>
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Cant. Vendida</th>
+                        <th>Total Generado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in productos %}
+                    <tr>
+                        <td>{{ p.nombre }}</td>
+                        <td><span class="badge bg-secondary">{{ p.categoria }}</span></td>
+                        <td class="fw-bold text-center">{{ p.cantidad_vendida }}</td>
+                        <td>S/ {{ "%.2f"|format(p.total_generado) }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="text-center">No hay datos en este rango.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tab-pane fade" id="tab-mozos">
+            <h5 class="mb-3">Ventas por Personal</h5>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Pedidos Atendidos</th>
+                        <th>Total Vendido</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in mozos %}
+                    <tr>
+                        <td>{{ m.mesero }}</td>
+                        <td>{{ m.cantidad }}</td>
+                        <td class="fw-bold text-success">S/ {{ "%.2f"|format(m.total) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tab-pane fade" id="tab-pagos">
+            <h5 class="mb-3">Dinero por Tipo de Pago</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Método</th>
+                                <th>Total Neto (Sin Vuelto)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pg in pagos %}
+                            <tr>
+                                <td class="text-uppercase">{{ pg.tipo_pago }}</td>
+                                <td>S/ {{ "%.2f"|format(pg.neto_recibido) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
 {% endblock %}

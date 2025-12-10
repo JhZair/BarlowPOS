@@ -3,7 +3,6 @@ from src.database import get_db_connection
 
 bp = Blueprint('pedidos', __name__, url_prefix='/pedidos')
 
-# --- 1. VISUALIZAR (Lectura de Pedidos + Usuarios + Mesas) ---
 @bp.route('/')
 def index():
     conn = get_db_connection()
@@ -24,13 +23,11 @@ def index():
     conn.close()
     return render_template('pedidos/index.html', pedidos=pedidos)
 
-# Ver detalle interno (Lectura de Detalles + Productos)
 @bp.route('/<int:id>')
 def ver_detalle(id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     
-    # Cabecera
     cursor.execute("""
         SELECT p.*, u.nombre as mesero, m.numero as mesa
         FROM pedidos p
@@ -40,7 +37,6 @@ def ver_detalle(id):
     """, (id,))
     pedido = cursor.fetchone()
     
-    # Detalles
     cursor.execute("""
         SELECT d.*, pr.nombre 
         FROM detalles_de_ventas d
@@ -53,7 +49,6 @@ def ver_detalle(id):
     return render_template('pedidos/detalle.html', pedido=pedido, detalles=detalles)
 
 
-# --- 2. INGRESAR (Afecta: Pedidos, Detalles, Mesas) ---
 @bp.route('/nuevo', methods=['GET', 'POST'])
 def nuevo_pedido():
     conn = get_db_connection()
@@ -69,13 +64,11 @@ def nuevo_pedido():
         try:
             conn.start_transaction()
 
-            # A. Insertar Pedido
             cursor.execute("INSERT INTO pedidos (total, id_usuario, id_mesa, fecha) VALUES (0, %s, %s, NOW())", (id_usuario, id_mesa))
             id_nuevo_pedido = cursor.lastrowid
 
             total_acumulado = 0
 
-            # B. Insertar Detalles (Loop)
             for i in range(len(productos_ids)):
                 pid = productos_ids[i]
                 cant = int(cantidades[i])
@@ -90,7 +83,6 @@ def nuevo_pedido():
 
             cursor.execute("UPDATE pedidos SET total = %s WHERE id_pedido = %s", (total_acumulado, id_nuevo_pedido))
 
-            # C. Actualizar Mesa (Entidad 3)
             cursor.execute("UPDATE mesas SET estado = 'ocupada' WHERE id_mesa = %s", (id_mesa,))
 
             conn.commit()
@@ -106,7 +98,6 @@ def nuevo_pedido():
         conn.close()
         return redirect(url_for('pedidos.index'))
 
-    # Cargar datos para el formulario GET
     cursor.execute("SELECT * FROM mesas WHERE estado = 'disponible'")
     mesas = cursor.fetchall()
     cursor.execute("SELECT * FROM usuarios WHERE acceso = 'activo'")
@@ -124,17 +115,14 @@ def editar_pedido(id):
     cursor = conn.cursor(dictionary=True)
 
     if request.method == 'POST':
-        # 1. Datos del formulario
         nueva_mesa_id = request.form['id_mesa']
         
-        # Listas de platos nuevos (o editados)
         productos_ids = request.form.getlist('productos[]')
         cantidades = request.form.getlist('cantidades[]')
 
         try:
             conn.start_transaction()
 
-            # --- PARTE A: CAMBIO DE MESA (Lógica anterior) ---
             cursor.execute("SELECT id_mesa FROM pedidos WHERE id_pedido = %s", (id,))
             pedido_actual = cursor.fetchone()
             vieja_mesa_id = pedido_actual['id_mesa']
@@ -144,12 +132,9 @@ def editar_pedido(id):
                 cursor.execute("UPDATE mesas SET estado = 'disponible' WHERE id_mesa = %s", (vieja_mesa_id,))
                 cursor.execute("UPDATE mesas SET estado = 'ocupada' WHERE id_mesa = %s", (nueva_mesa_id,))
 
-            # --- PARTE B: EDITAR PLATOS (Estrategia Borrón y Cuenta Nueva) ---
             
-            # 1. Borramos TODOS los platos anteriores de este pedido
             cursor.execute("DELETE FROM detalles_de_ventas WHERE id_pedido = %s", (id,))
 
-            # 2. Insertamos los nuevos platos y recalculamos total
             total_acumulado = 0
             
             for i in range(len(productos_ids)):
@@ -157,7 +142,6 @@ def editar_pedido(id):
                 cant = int(cantidades[i])
                 
                 if cant > 0:
-                    # Obtenemos precio actual
                     cursor.execute("SELECT precio_base FROM productos WHERE id_producto = %s", (pid,))
                     prod = cursor.fetchone()
                     precio = prod['precio_base']
@@ -165,13 +149,11 @@ def editar_pedido(id):
                     subtotal = precio * cant
                     total_acumulado += subtotal
 
-                    # Insertamos de nuevo
                     cursor.execute("""
                         INSERT INTO detalles_de_ventas (id_pedido, id_producto, cantidad, precio_unitario)
                         VALUES (%s, %s, %s, %s)
                     """, (id, pid, cant, precio))
 
-            # 3. Actualizamos el Total en la cabecera
             cursor.execute("UPDATE pedidos SET total = %s WHERE id_pedido = %s", (total_acumulado, id))
 
             conn.commit()
@@ -185,9 +167,7 @@ def editar_pedido(id):
             cursor.close()
             conn.close()
 
-    # --- GET: CARGAR DATOS PARA EL FORMULARIO ---
     
-    # 1. Cabecera
     cursor.execute("""
         SELECT p.*, u.nombre as nombre_mesero 
         FROM pedidos p 
@@ -196,15 +176,12 @@ def editar_pedido(id):
     """, (id,))
     pedido = cursor.fetchone()
 
-    # 2. Mesas (Para el select)
     cursor.execute("SELECT * FROM mesas WHERE estado = 'disponible' OR id_mesa = %s", (pedido['id_mesa'],))
     mesas = cursor.fetchall()
 
-    # 3. Productos (Para el select de agregar más)
     cursor.execute("SELECT * FROM productos")
     todos_productos = cursor.fetchall()
 
-    # 4. Detalles ACTUALES (Para llenar las filas existentes)
     cursor.execute("""
         SELECT d.*, p.nombre, p.precio_base 
         FROM detalles_de_ventas d
@@ -221,7 +198,6 @@ def editar_pedido(id):
                            detalles=detalles_actuales)
 
 
-# --- 4. BORRAR (Afecta: Pedidos, Detalles(Cascade), Mesas) ---
 @bp.route('/eliminar/<int:id>', methods=['POST'])
 def eliminar_pedido(id):
     conn = get_db_connection()
@@ -229,18 +205,14 @@ def eliminar_pedido(id):
     try:
         conn.start_transaction()
         
-        # Obtener mesa para liberarla
         cursor.execute("SELECT id_mesa FROM pedidos WHERE id_pedido = %s", (id,))
         row = cursor.fetchone()
         
         if row:
             id_mesa = row['id_mesa']
             
-            # A. Borrar Pedido (Entidad 1)
-            # B. Borrar Detalles (Entidad 2 - Automático por ON DELETE CASCADE en MySQL)
             cursor.execute("DELETE FROM pedidos WHERE id_pedido = %s", (id,))
             
-            # C. Actualizar Mesa (Entidad 3)
             cursor.execute("UPDATE mesas SET estado = 'disponible' WHERE id_mesa = %s", (id_mesa,))
             
             conn.commit()

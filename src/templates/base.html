@@ -18,23 +18,23 @@
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('usuarios.lista') }}">Usuarios</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Mesas</a></li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('productos.lista') }}">Productos</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('reportes.ventas') }}">Reportes</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('pedidos.index') }}">Pedidos</a>
+                        <a class="nav-link" href="{{ url_for('mesas.lista') }}">Mesas</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('ambientes.index') }}">Ambientes</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('productos.lista') }}">Productos</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('clientes.index') }}">Clientes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('pedidos.index') }}">Pedidos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('reportes.ventas') }}">Reportes</a>
                     </li>
                 </ul>
             </div>

@@ -1,36 +1,52 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Editar Producto</h2>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Editar Producto</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('productos.actualizar') }}" method="POST">
+                    
+                    <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
 
-<form action="{{ url_for('productos.actualizar') }}" method="POST">
-    
-    <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre del Producto</label>
+                        <input type="text" class="form-control" name="nombre" value="{{ producto.nombre }}" required>
+                    </div>
 
-    <label>Nombre:</label><br>
-    <input type="text" name="nombre" value="{{ producto.nombre }}" required>
-    <br><br>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Precio Base (S/)</label>
+                            <input type="number" step="0.01" class="form-control" name="precio" value="{{ producto.precio_base }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tipo</label>
+                            <input type="text" class="form-control" name="tipo" value="{{ producto.tipo_producto }}">
+                        </div>
+                    </div>
 
-    <label>Precio Base (S/):</label><br>
-    <input type="number" step="0.01" name="precio" value="{{ producto.precio_base }}" required>
-    <br><br>
-    
-    <label>Tipo:</label><br>
-    <input type="text" name="tipo" value="{{ producto.tipo_producto }}">
-    <br><br>
+                    <div class="mb-3">
+                        <label class="form-label">Clasificación</label>
+                        <select class="form-select" name="categoria" required>
+                            {% for cat in categorias %}
+                                <option value="{{ cat.id_clasificacion }}" 
+                                    {% if cat.id_clasificacion == producto.id_clasificaciones %} selected {% endif %}>
+                                    {{ cat.nombre }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-    <label>Clasificación:</label><br>
-    <select name="categoria" required>
-        {% for cat in categorias %}
-            <option value="{{ cat.id_clasificacion }}" 
-                {% if cat.id_clasificacion == producto.id_clasificaciones %} selected {% endif %}>
-                {{ cat.nombre }}
-            </option>
-        {% endfor %}
-    </select>
-    <br><br>
-
-    <button type="submit">Guardar Cambios</button>
-    <a href="{{ url_for('productos.lista') }}">Cancelar</a>
-</form>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        <a href="{{ url_for('productos.lista') }}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

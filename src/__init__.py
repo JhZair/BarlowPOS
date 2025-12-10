@@ -8,15 +8,15 @@ def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'clave_secreta_desarrollo'
 
-    # --- REGISTRO DE RUTAS ---
+    #REGISTRO DE RUTAS
     from .routes import home
     from .routes import usuarios
-    from .routes import productos
     from .routes import reportes
     from .routes import productos
     from .routes import pedidos
     from .routes import ambientes
     from .routes import clientes
+    from .routes import mesas
 
     app.register_blueprint(home.bp)
     app.register_blueprint(usuarios.bp)
@@ -25,6 +25,7 @@ def create_app():
     app.register_blueprint(pedidos.bp)
     app.register_blueprint(ambientes.bp)
     app.register_blueprint(clientes.bp)
+    app.register_blueprint(mesas.bp)
 
     @app.route('/prueba-db')
     def prueba_db():

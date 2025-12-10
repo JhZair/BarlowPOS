@@ -47,7 +47,6 @@ def guardar():
     conn = get_db_connection()
     if conn:
         cursor = conn.cursor()
-        # Calculamos ID manual (porque no usaste AUTO_INCREMENT en tu SQL original)
         cursor.execute("SELECT COALESCE(MAX(id_producto), 0) + 1 FROM productos")
         nuevo_id = cursor.fetchone()[0]
         
@@ -65,11 +64,9 @@ def editar(id):
     if conn:
         cursor = conn.cursor(dictionary=True)
         
-        # 1. Buscar el producto específico
         cursor.execute("SELECT * FROM productos WHERE id_producto = %s", (id,))
         producto = cursor.fetchone()
         
-        # 2. Cargar categorías para el combo box
         cursor.execute("SELECT id_clasificacion, nombre FROM clasificaciones")
         categorias = cursor.fetchall()
         
@@ -82,10 +79,8 @@ def editar(id):
             return "Producto no encontrado"
     return "Error de conexión"
 
-# --- RUTA: Procesar la ACTUALIZACIÓN (POST) ---
 @bp.route('/actualizar', methods=['POST'])
 def actualizar():
-    # Recibimos el ID oculto y los datos nuevos
     id_producto = request.form['id_producto']
     nombre = request.form['nombre']
     precio = request.form['precio']
@@ -115,14 +110,12 @@ def actualizar():
         return redirect(url_for('productos.lista'))
     return "Error de conexión"
 
-# --- RUTA: ELIMINAR ---
 @bp.route('/eliminar/<int:id>')
 def eliminar(id):
     conn = get_db_connection()
     if conn:
         cursor = conn.cursor()
         try:
-            # Intento de borrado
             cursor.execute("DELETE FROM productos WHERE id_producto = %s", (id,))
             conn.commit()
         except Exception as e:

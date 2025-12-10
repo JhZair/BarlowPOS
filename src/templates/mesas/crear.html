@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Registrar Mesa</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('mesas.guardar') }}" method="POST">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Número de Mesa</label>
+                        <input type="number" class="form-control" name="numero" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Ambiente</label>
+                        <select class="form-select" name="id_ambiente" required>
+                            <option value="">Seleccione ambiente...</option>
+                            {% for amb in ambientes %}
+                                <option value="{{ amb.id_ambiente }}">{{ amb.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Estado Inicial</label>
+                        <select class="form-select" name="estado">
+                            <option value="disponible">Disponible</option>
+                            <option value="ocupada">Ocupada</option>
+                            <option value="reservada">Reservada</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                        <a href="{{ url_for('mesas.lista') }}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

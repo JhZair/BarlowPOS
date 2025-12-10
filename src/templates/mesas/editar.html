@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Editar Mesa</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('mesas.actualizar') }}" method="POST">
+                    <input type="hidden" name="id_mesa" value="{{ mesa.id_mesa }}">
+
+                    <div class="mb-3">
+                        <label class="form-label">Número de Mesa</label>
+                        <input type="number" class="form-control" name="numero" value="{{ mesa.numero }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Ambiente</label>
+                        <select class="form-select" name="id_ambiente" required>
+                            {% for amb in ambientes %}
+                                <option value="{{ amb.id_ambiente }}" 
+                                    {% if amb.id_ambiente == mesa.id_ambiente %}selected{% endif %}>
+                                    {{ amb.nombre }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Estado</label>
+                        <select class="form-select" name="estado">
+                            <option value="disponible" {% if mesa.estado == 'disponible' %}selected{% endif %}>Disponible</option>
+                            <option value="ocupada" {% if mesa.estado == 'ocupada' %}selected{% endif %}>Ocupada</option>
+                            <option value="reservada" {% if mesa.estado == 'reservada' %}selected{% endif %}>Reservada</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        <a href="{{ url_for('mesas.lista') }}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
