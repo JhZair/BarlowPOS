@@ -23,3 +23,7 @@ __pycache__/
 # 6. Base de datos SQLite (si la usaras, aunque usas MySQL, es bueno tenerlo)
 *.sqlite3
 *.db
+sonar-project.properties
+.scannerwork
+*.csv
+*.ps1
